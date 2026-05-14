@@ -3,9 +3,16 @@ from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from fastapi import FastAPI
 
 # Initialize FastMCP server
 mcp = FastMCP("weather")
+
+# Initialize FastAPI app
+app = FastAPI()
+
+# Store the MCP instance for access in endpoints
+mcp_instance = None
 
 # Constants
 NWS_API_BASE = "https://api.weather.gov"
@@ -124,8 +131,57 @@ async def get_location(location: str) -> str:
 
 def main():
     logging.info("starting weather app")
-    # Initialize and run the server
-    mcp.run(transport="stdio")
+    # Run the MCP server
+    mcp.run()
+
+
+# Add HTTP endpoints for testing
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "ok", "service": "weather"}
+
+
+@app.post("/api/get_location")
+async def http_get_location(location: str):
+    """HTTP endpoint for get_location."""
+    return {"result": await get_location(location)}
+
+
+@app.post("/api/get_forecast")
+async def http_get_forecast(latitude: float, longitude: float):
+    """HTTP endpoint for get_forecast."""
+    return {"result": await get_forecast(latitude, longitude)}
+
+
+@app.post("/api/get_alerts")
+async def http_get_alerts(state: str):
+    """HTTP endpoint for get_alerts."""
+    return {"result": await get_alerts(state)}
+
+
+@app.get("/api/tools")
+async def list_tools():
+    """List all available tools."""
+    return {
+        "tools": [
+            {
+                "name": "get_location",
+                "description": "Get latitude and longitude for a location",
+                "params": {"location": "string"}
+            },
+            {
+                "name": "get_forecast",
+                "description": "Get weather forecast for a location",
+                "params": {"latitude": "float", "longitude": "float"}
+            },
+            {
+                "name": "get_alerts",
+                "description": "Get weather alerts for a US state",
+                "params": {"state": "string (2-letter state code)"}
+            }
+        ]
+    }
 
 
 if __name__ == "__main__":
