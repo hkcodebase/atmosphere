@@ -18,11 +18,12 @@ Answer:""")
 
 
 def _get_llm() -> ChatOpenAI:
-    # llama.cpp server exposes an OpenAI-compatible /v1 API
+    # Docker Model Runner exposes an OpenAI-compatible API at this endpoint.
+    # The model name must match the one declared in docker-compose.yml (provider.options.model).
     return ChatOpenAI(
-        base_url=f"{settings.gemma_base_url}/v1",
+        base_url=settings.llm_base_url,
         api_key="not-required",
-        model="gemma",
+        model=settings.llm_model,
         temperature=0.2,
         max_tokens=1024,
     )
