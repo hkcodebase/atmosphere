@@ -1,0 +1,15 @@
+Welcome to the RAG Document Search system.
+
+This is a sample document to verify your setup is working.
+
+The system uses:
+- Gemma (via llama.cpp server in Docker) as the language model
+- Neo4j as the vector database and graph store
+- sentence-transformers (all-MiniLM-L6-v2) for local embeddings
+- FastAPI as the Python API layer
+- React as the user interface
+
+To add your own documents, place them in the folder specified by DOCS_FOLDER in your .env file,
+then click "Scan & Ingest All" in the Ingest tab, or upload individual files via drag-and-drop.
+
+Supported file types: PDF, DOCX, TXT, MD, XLSX, XLS
